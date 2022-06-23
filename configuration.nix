@@ -4,19 +4,132 @@
 
 { config, pkgs, ... }:
 
+let
+  home-manager = builtins.fetchTarball "https://github.com/nix-community/home-manager/archive/release-22.05.tar.gz";
+in 
+
 {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      (import "${home-manager}/nixos")
     ];
 
+ nixpkgs.config.allowUnfree = true;
+
+users.users.kunny = {
+    name = "kunny";
+    home = "/home/kunny/";
+  };
+
+ home-manager.users.kunny = {
+    home.packages = with pkgs; [
+      # CLI Stuff
+      neofetch
+      htop
+
+      # Programming Stuff
+      alacritty 
+      git
+      python310
+      vscode
+      jetbrains.idea-community
+
+      # SDK Stuff
+      # dotnet-runtime
+      openjdk
+
+      # Video Stuff
+      ffmpeg_5
+      libsForQt5.kdenlive
+      mpv
+      vlc
+
+      # Social 
+      thunderbird
+      tdesktop
+      element-desktop
+
+      # Sound 
+      pavucontrol
+      qpwgraph
+
+      # torrent 
+      qbittorrent
+
+      # games 
+      wine
+      wine-wayland
+      polymc
+      zeroad
+      superTuxKart
+
+      # other
+      libreoffice-fresh
+      anki
+      gimp
+      bitwarden
+      obs-studio
+      zoom-us
+      teams
+      libsForQt5.gwenview
+      gImageReader
+      nitrogen
+      libsForQt5.okular
+      virtualbox
+      tor
+      discord-canary
+
+      # input 
+      fcitx5
+      fcitx5-mozc
+      fcitx5-unikey
+      fcitx5-configtool
+
+      # network 
+      networkmanager
+      networkmanager-openvpn
+      nm-tray
+      blueman
+
+    ];
+
+    programs = {
+    };
+  };
+
+environment.pathsToLink = [ "/libexec" ]; # links /libexec from derivations to /run/current-system/sw 
+  services.xserver = {
+    enable = true;
+
+    desktopManager = {
+      xterm.enable = false;
+    };
+   
+    displayManager = {
+        defaultSession = "none+i3";
+    };
+
+    windowManager.i3 = {
+      enable = true;
+      package = pkgs.i3-gaps;
+      extraPackages = with pkgs; [
+        dmenu #application launcher most people use
+        i3status # gives you the default i3 status bar
+        i3lock #default i3 screen locker
+        i3blocks #if you are planning on using i3blocks over i3status
+     ];
+    };
+  };
+
+
   # Use the systemd-boot EFI boot loader.
-  #boot.loader.grub.device = true;
-  boot.loader.systemd-boot.enable = true;
+  boot.loader.grub.device = true;
+  #boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
    networking.hostName = "nixos"; # Define your hostname.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+   #networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
    networking.networkmanager.enable = true; 
 
   # Set your time zone.
@@ -41,13 +154,13 @@
    };
 
   # Enable the X11 windowing system.
-  services.xserver.enable = true;
+  #services.xserver.enable = true;
 
 
   # Enable the GNOME Desktop Environment.
-  services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
-  
+  #services.xserver.displayManager.gdm.enable = true;
+  #services.xserver.desktopManager.gnome.enable = true;
+
 
   # Configure keymap in X11
    services.xserver.layout = "us";
@@ -64,7 +177,7 @@
    services.xserver.libinput.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-   users.users.lam = {
+   users.users.kunny = {
      isNormalUser = true;
      extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
    };
@@ -72,16 +185,11 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
    environment.systemPackages = with pkgs; [
-	vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+	vim 
 	wget
 	firefox
-	ranger
-	pcmanfm
-	alacritty
-	rofi
-	dmenu
-	neofetch
-   ];
+  chromium
+	 ];
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -94,7 +202,7 @@
   # List services that you want to enable:
 
   # Enable the OpenSSH daemon.
-   services.openssh.enable = true;
+   #services.openssh.enable = true;
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
@@ -108,7 +216,7 @@
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "21.11"; # Did you read the comment?
+  system.stateVersion = "22.05"; # Did you read the comment?
 
 }
 
