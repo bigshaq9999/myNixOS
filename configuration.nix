@@ -135,6 +135,7 @@ environment.pathsToLink = [ "/libexec" ]; # links /libexec from derivations to /
   boot.loader.grub.device = true;
   #boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader.efi.efiSysMountPoint = "/boot/efi";
 
    networking.hostName = "nixos"; # Define your hostname.
    #networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -146,9 +147,9 @@ environment.pathsToLink = [ "/libexec" ]; # links /libexec from derivations to /
   # The global useDHCP flag is deprecated, therefore explicitly set to false here.
   # Per-interface useDHCP will be mandatory in the future, so this generated config
   # replicates the default behaviour.
-  networking.useDHCP = false;
-  networking.interfaces.enp2s0.useDHCP = true;
-  networking.interfaces.wlp1s0.useDHCP = true;
+  # networking.useDHCP = false;
+  # networking.interfaces.enp2s0.useDHCP = true;
+  # networking.interfaces.wlp1s0.useDHCP = true;
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
@@ -187,7 +188,7 @@ environment.pathsToLink = [ "/libexec" ]; # links /libexec from derivations to /
   # Define a user account. Don't forget to set a password with ‘passwd’.
    users.users.kunny = {
      isNormalUser = true;
-     extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
+     extraGroups = [ "networkmanager" "wheel" ]; # Enable ‘sudo’ for the user.
    };
 
   # List packages installed in system profile. To search, run:
@@ -196,7 +197,8 @@ environment.pathsToLink = [ "/libexec" ]; # links /libexec from derivations to /
 	vim 
 	wget
 	firefox
-  chromium
+        chromium
+        w3m 
 	 ];
 
   # Some programs need SUID wrappers, can be configured further or are
