@@ -16,6 +16,14 @@ in
     ];
 
  nixpkgs.config.allowUnfree = true;
+ fonts.fonts = with pkgs; [
+    noto-fonts
+    noto-fonts-cjk
+    noto-fonts-emoji
+    (nerdfonts.override { fonts = [ "FiraCode" "DroidSansMono" ]; })
+  ];
+fonts.fontDir.enable = true;
+
 
 users.users.kunny = {
     name = "kunny";
