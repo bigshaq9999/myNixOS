@@ -222,6 +222,8 @@ environment.pathsToLink = [ "/libexec" ]; # links /libexec from derivations to /
     lm_sensors
     acpi
     alsa-utils
+    xorg.xprop
+    
 	 ];
 
   # Some programs need SUID wrappers, can be configured further or are
