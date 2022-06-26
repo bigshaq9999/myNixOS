@@ -50,11 +50,11 @@ users.users.kunny = {
  home-manager.users.kunny = {
     home.packages = with pkgs; [
       # CLI Stuff
-	ranger
-	neofetch
-	htop
-	unzip
-	zip
+	    ranger
+	    neofetch
+	    htop
+	    unzip
+	    zip
 
       # Programming Stuff
       alacritty 
@@ -109,8 +109,6 @@ users.users.kunny = {
       discord-canary
       rofi-wayland
       pcmanfm
-
-	# input 
 
       # network 
       networkmanager-openvpn
@@ -213,14 +211,17 @@ environment.pathsToLink = [ "/libexec" ]; # links /libexec from derivations to /
   # List packages installed in system profile. To search, run:
   # $ nix search wget
    environment.systemPackages = with pkgs; [
-	nordic
-	vim 
-	wget
-	firefox
-        chromium
-        w3m 
-	brightnessctl
-	# input
+  	nordic
+	  vim 
+	  wget
+	  firefox
+    chromium
+    w3m 
+	  brightnessctl
+    sysstat
+    lm_sensors
+    acpi
+    alsa-utils
 	 ];
 
   # Some programs need SUID wrappers, can be configured further or are
