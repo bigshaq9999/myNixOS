@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   home-manager = builtins.fetchTarball "https://github.com/nix-community/home-manager/archive/release-22.05.tar.gz";
@@ -14,9 +14,14 @@ in
       ./hardware-configuration.nix
       (import "${home-manager}/nixos")
     ];
+ 
+ # Needed for store VSCode auth token 
+ services.gnome.gnome-keyring.enable = true;
 
  nixpkgs.config.allowUnfree = true;
  fonts.fonts = with pkgs; [
+    meslo-lg
+    hack-font
     noto-fonts
     noto-fonts-cjk
     noto-fonts-emoji
@@ -24,6 +29,18 @@ in
   ];
 fonts.fontDir.enable = true;
 
+i18n = {
+      inputMethod = {
+        enabled = "ibus";
+        ibus.engines = with pkgs.ibus-engines; [ mozc bamboo anthy ];
+      };
+    };
+
+environment.sessionVariables = {
+    GTK_IM_MODULE = "ibus";
+    QT_IM_MODULE = "ibus";
+    XMODIFIERS = "@im=ibus";
+  };
 
 users.users.kunny = {
     name = "kunny";
@@ -33,8 +50,11 @@ users.users.kunny = {
  home-manager.users.kunny = {
     home.packages = with pkgs; [
       # CLI Stuff
-      neofetch
-      htop
+	ranger
+	neofetch
+	htop
+	unzip
+	zip
 
       # Programming Stuff
       alacritty 
@@ -87,19 +107,16 @@ users.users.kunny = {
       virtualbox
       tor
       discord-canary
+      rofi-wayland
+      pcmanfm
 
-      # input 
-      fcitx5
-      fcitx5-mozc
-      fcitx5-unikey
-      fcitx5-configtool
+	# input 
 
       # network 
-      networkmanager
       networkmanager-openvpn
       nm-tray
       blueman
-
+      networkmanager_dmenu
     ];
 
     programs = {
@@ -132,8 +149,8 @@ environment.pathsToLink = [ "/libexec" ]; # links /libexec from derivations to /
 
 
   # Use the systemd-boot EFI boot loader.
-  boot.loader.grub.device = true;
-  #boot.loader.systemd-boot.enable = true;
+  #boot.loader.grub.device = true;
+  boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.efi.efiSysMountPoint = "/boot/efi";
 
@@ -165,8 +182,10 @@ environment.pathsToLink = [ "/libexec" ]; # links /libexec from derivations to /
   # Enable the X11 windowing system.
   #services.xserver.enable = true;
 
-
-  # Enable the GNOME Desktop Environment.
+  hardware.bluetooth.enable = true;
+  services.blueman.enable = true;
+  
+# Enable the GNOME Desktop Environment.
   #services.xserver.displayManager.gdm.enable = true;
   #services.xserver.desktopManager.gnome.enable = true;
 
@@ -194,11 +213,14 @@ environment.pathsToLink = [ "/libexec" ]; # links /libexec from derivations to /
   # List packages installed in system profile. To search, run:
   # $ nix search wget
    environment.systemPackages = with pkgs; [
+	nordic
 	vim 
 	wget
 	firefox
         chromium
         w3m 
+	brightnessctl
+	# input
 	 ];
 
   # Some programs need SUID wrappers, can be configured further or are
