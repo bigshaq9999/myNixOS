@@ -55,6 +55,12 @@ users.users.kunny = {
 	    htop
 	    unzip
 	    zip
+      scrot
+      dconf
+      yt-dlp
+      imagemagick
+      duf
+      psmisc
 
       # Programming Stuff
       alacritty 
@@ -62,6 +68,7 @@ users.users.kunny = {
       python310
       vscode
       jetbrains.idea-community
+      geany
 
       # SDK Stuff
       # dotnet-runtime
@@ -89,37 +96,54 @@ users.users.kunny = {
       wine
       wine-wayland
       polymc
-      zeroad
-      superTuxKart
 
-      # other
+      # studying
       libreoffice-fresh
       anki
+      zoom-us
+      teams
+      galculator
+      pdftk
+      
+      # other 
       gimp
       bitwarden
       obs-studio
-      zoom-us
-      teams
       libsForQt5.gwenview
       gImageReader
       nitrogen
       libsForQt5.okular
-      virtualbox
-      tor
-      discord-canary
+      tor-browser-bundle-bin
       rofi-wayland
-      pcmanfm
+      xfce.thunar
+      xfce.thunar-volman
+      xfce.tumbler
+      
 
       # network 
       networkmanager-openvpn
       nm-tray
-      blueman
       networkmanager_dmenu
+      mullvad-vpn
     ];
 
-    programs = {
+    # GTK theme 
+    gtk = {
+      enable = true; 
+      cursorTheme = {
+        package = pkgs.vanilla-dmz;
+        name = "Vanilla-DMZ"; 
+        size = 16; 
+      };
+      font = { 
+        name = "Noto Sans";
+        size = 14; 
+      };
+      theme = {
+        name = "Nordic"; 
+        };
+      };
     };
-  };
 
 environment.pathsToLink = [ "/libexec" ]; # links /libexec from derivations to /run/current-system/sw 
   services.xserver = {
@@ -154,7 +178,20 @@ environment.pathsToLink = [ "/libexec" ]; # links /libexec from derivations to /
 
    networking.hostName = "nixos"; # Define your hostname.
    #networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-   networking.networkmanager.enable = true; 
+   networking.networkmanager = {
+    enable = true; 
+    plugins = with pkgs; [
+      networkmanager-openvpn
+    ];
+   };
+   
+   programs.nm-applet = {
+    indicator = true;
+    enable = true; 
+   };
+
+  # mullvad 
+  services.mullvad-vpn.enable = true; 
 
   # Set your time zone.
    time.timeZone = "Europe/Moscow";
@@ -193,11 +230,22 @@ environment.pathsToLink = [ "/libexec" ]; # links /libexec from derivations to /
    services.xserver.xkbOptions = "eurosign:e";
 
   # Enable CUPS to print documents.
-   services.printing.enable = true;
+  # services.printing.enable = true;
 
   # Enable sound.
-   sound.enable = true;
-   hardware.pulseaudio.enable = true;
+    #hardware.pulseaudio.enable = true;
+    security.rtkit.enable = true;
+    services.pipewire = {
+      audio.enable = true; 
+      enable = true;
+      alsa.enable = true;
+      alsa.support32Bit = true;
+      pulse.enable = true;
+      wireplumber.enable = true; 
+
+    # If you want to use JACK applications, uncomment this
+      jack.enable = true;
+    };
 
   # Enable touchpad support (enabled default in most desktopManager).
    services.xserver.libinput.enable = true;
@@ -223,8 +271,53 @@ environment.pathsToLink = [ "/libexec" ]; # links /libexec from derivations to /
     acpi
     alsa-utils
     xorg.xprop
-    
+    networkmanagerapplet
+    libmtp
 	 ];
+
+  # Gtk/qt5 themes 
+    qt5 = {
+      enable = true;
+      platformTheme = "gnome";
+      style = "adwaita";
+    };
+  
+  # VirtualBox 
+  virtualisation.virtualbox.host.enable = true;
+   users.extraGroups.vboxusers.members = [ "kunny" ];
+
+  # enable MTP 
+  services.gvfs.enable = true;
+
+  # flatpak 
+  services.flatpak.enable = true; 
+  xdg.portal.enable = true; 
+  xdg.portal.gtkUsePortal = false; 
+
+  # Steam 
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
+    dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
+  };
+
+
+  # Chromium 
+  programs.chromium = {
+    enable = true;
+      extraOpts = {
+      "AutofillAddressEnabled" = false;
+      "AutofillCreditCardEnabled" = false;
+      "ImportAutofillFormData" = false;
+      "SpellcheckLanguage" = ["en-US" "ru-RU" "jp-JP" "vn-VN"];
+      };
+    extensions = [
+      "bgnkhhnnamicmpeenaelnjfhikgbkllg" # AdGuard
+      "mnjggcdmjocbbbhaepdhchncahnbgone" # Sponsorblock
+      "ohnjgmpcibpbafdlkimncjhflgedgpam" # 4ChudX
+      "ejonaglbdpcfkgbcnidjlnjogfdgbofp" # Modern-Scroll
+    ];
+  };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
